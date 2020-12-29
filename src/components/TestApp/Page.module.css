@@ -1,0 +1,43 @@
+.leftCol{
+    text-align: -moz-left;
+    width: 150px;
+    text-align: left;
+}
+.rightCol{
+    width: 200px
+}
+.title{
+    text-align: center;
+    font-size: x-large;
+}
+table{
+border: 2px solid;
+    border-radius: 5px;
+}
+td{
+    padding: 10px;
+}
+td select{
+    width: 207px;
+}
+td img{
+    margin-top: 5px;
+    width: 400px;
+}
+.fieldName{
+   font-size: medium;
+}
+table{
+    margin: auto;
+    background-color: #fffef7;
+}
+.sendButtonStr{
+    text-align: center;
+}
+.sendButtonStr input{
+    width: 150px;
+    border-radius: 5px;
+}
+.fields{
+    width: 200px;
+}

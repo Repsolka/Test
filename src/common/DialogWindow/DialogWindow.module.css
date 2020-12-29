@@ -1,0 +1,10 @@
+.center{
+    text-align: center;
+}
+.center span{
+    font-size: medium;
+}
+.center button{
+    margin: 15px;
+    font:message-box;
+}

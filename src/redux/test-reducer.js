@@ -1,5 +1,3 @@
-import {act} from "@testing-library/react";
-
 const SET_STATE = 'SET_STATE'
 const UPDATE_FIRST_FIELD_TEXT = 'UPDATE_FIRST_FIELD_TEXT'
 const UPDATE_SECOND_FIELD_TEXT = 'UPDATE_SECOND_FIELD_TEXT'
@@ -14,30 +12,9 @@ let initialState = {
     firstFieldText:'',
     secondFieldText:'',
     thirdFieldOption: '',
+    propName: '',
     isFetching: true,
     isRequestCanceled: false
-    /*[{
-            title: '',
-            name: '',
-            type: ''
-        },
-        {
-            title: '',
-            name: '',
-            type: ''
-        },
-        {
-            title: '',
-            name: '',
-            type: '',
-            values: {
-                none: '',
-                v1: '',
-                v2: '',
-                v3: ''
-            }
-        }
-    ]*/
 }
 
 const appReducer = (state = initialState, action) => {
@@ -49,6 +26,7 @@ const appReducer = (state = initialState, action) => {
                 image: action.image,
                 fields: action.fields,
                 thirdFieldOption: action.fields[2].values.none,
+                propName: 'none',
                 isFetching: false
             }
         case UPDATE_FIRST_FIELD_TEXT:
@@ -64,7 +42,8 @@ const appReducer = (state = initialState, action) => {
         case UPDATE_THIRD_FIELD_OPTION:
             return {
                 ...state,
-                thirdFieldOption: action.option
+                thirdFieldOption: action.option,
+                propName: action.propName
             }
         case DATA_IS_FETCHING:
             return {
@@ -84,7 +63,7 @@ const appReducer = (state = initialState, action) => {
 export const setState = (title, image, fields) => ({type:SET_STATE, title: title, image: image, fields: fields});
 export const updateFirstFieldText = (newText) => ({type: UPDATE_FIRST_FIELD_TEXT, newText: newText});
 export const updateSecondFieldText = (newText) => ({type: UPDATE_SECOND_FIELD_TEXT, newText: newText});
-export const updateThirdFieldOption = (option) => ({type: UPDATE_THIRD_FIELD_OPTION, option: option});
+export const updateThirdFieldOption = (option, propName) => ({type: UPDATE_THIRD_FIELD_OPTION, option: option, propName: propName});
 export const dataIsFetching = (value) => ({type: DATA_IS_FETCHING, value: value});
 export const cancelRequest =() => ({type: CANCEL_REQUEST});
 export default appReducer;

@@ -4,8 +4,8 @@ import styles from './Preloader.module.css'
 
 let Preloader = (props) => {
     return (
-        <div>
-            <img src = {preloader} className={styles.preloaderImage}/>
+        <div className={styles.figure}>
+            <img src = {preloader} className={styles.preloaderImage} alt={"Загрузка..."}/>
         </div>
     )
 }

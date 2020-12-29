@@ -10,6 +10,7 @@ import {
 } from "../../redux/test-reducer"
 import Page from "./Page";
 import DialogWindow from "../../common/DialogWindow/DialogWindow";
+import AbortDialogWindow from "../../common/AbortDialogWindow/AbortDialogWindow";
 
 class TestContainer extends React.Component {
     constructor(props) {
@@ -17,18 +18,21 @@ class TestContainer extends React.Component {
         this.firstFieldValueRef = React.createRef();
         this.secondFieldValueRef = React.createRef();
         this.thirdFieldValueRef = React.createRef();
-        this.controller = new AbortController();
-        this.signal = this.controller.signal;
         this.props.dataIsFetching(true);
         this.worker = new Worker('../../worker.js');
+        this.amountOfElements = 0;
+        this.thirdProperties = null;
+        this.thirdValues = null;
     }
 
     componentDidMount() {
-        console.log("didMount")
 
         this.getData({url: 'http://test.clevertec.ru/tt/meta/', form: undefined, method: 'get'})
             .then((value) => {
                 this.props.setState(value.title, value.image, value.fields)
+            })
+            .then((value) => {
+                this.setValues();
             })
     }
 
@@ -37,11 +41,9 @@ class TestContainer extends React.Component {
 
             this.worker.onmessage = function (e) {
                 if (WorkedData.method === 'get') {
-                    console.log(e.data)
                     resolve(e.data)
                 }
                 if (WorkedData.method === 'post') {
-                    console.log(e.data)
                     resolve(e.data)
                 }
             };
@@ -49,36 +51,50 @@ class TestContainer extends React.Component {
         })
     }
 
-    onFirstFormChange = (value) => {
-        console.log("change")
+    setValues = () => {
+        this.thirdProperties = Object.keys(this.props.fields[2].values).map((value) => {
+            this.amountOfElements++;
+            return value;
+        })
+        this.thirdValues = Object.values(this.props.fields[2].values).map((value) => {
+            return value;
+        })
+    }
+
+    onFirstFormChange = () => {
         this.props.updateFirstFieldText(this.firstFieldValueRef.current.value);
     }
     onSecondFieldChange = () => {
-        console.log("change2")
         this.props.updateSecondFieldText(this.secondFieldValueRef.current.value);
     }
     onThirdFieldChange = () => {
-        console.log("change3")
-        console.log(this.thirdFieldValueRef.current.value)
-        this.props.updateThirdFieldOption(this.thirdFieldValueRef.current.value);
+        for (let i = 0; i < this.amountOfElements; i++) {
+            if (this.thirdFieldValueRef.current.value === this.thirdValues[i]) {
+                this.props.updateThirdFieldOption(this.thirdFieldValueRef.current.value, this.thirdProperties[i]);
+            }
+        }
     }
     onAbortButtonClick = () => {
         this.worker.terminate();
         this.props.cancelRequest();
     }
+    onReloadButtonClick = () => {
+        document.location.reload(true);
+    }
     onSendButtonClick = (event) => {
         this.props.dataIsFetching(true)
         event.preventDefault();
-        console.log('Send button clicked')
         this.getData({
             url: 'http://test.clevertec.ru/tt/data', form: {
                 text: this.props.firstFieldText,
                 numeric: this.props.secondFieldText,
-                list: this.props.thirdFieldOption
+                list: this.props.propName
             }, method: 'post'
         })
             .then((value) => {
-                alert(value)
+                this.props.dataIsFetching(false)
+                document.location.reload(true);
+                alert(value);
             })
     }
 
@@ -86,7 +102,7 @@ class TestContainer extends React.Component {
         if (this.props.isFetching === true) {
             if (this.props.isRequestCanceled === true) {
                 return (
-                    <div>Запрос отменён пользователем. Перезагрузите страницу</div>
+                    <AbortDialogWindow onReloadButtonClick={this.onReloadButtonClick}/>
                 )
             } else {
                 return (
@@ -122,6 +138,7 @@ let mapStateToProps = (state) => {
         firstFieldText: state.testPage.firstFieldText,
         secondFieldText: state.testPage.secondFieldText,
         thirdFieldOption: state.testPage.thirdFieldOption,
+        propName: state.testPage.propName,
         isFetching: state.testPage.isFetching,
         isRequestCanceled: state.testPage.isRequestCanceled
     }
